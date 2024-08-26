@@ -16,8 +16,8 @@ jobs:
 
     - name: Set Git user
       run: |
-        git config --global user.name "Your Name"
-        git config --global user.email "you@example.com"
+        git config --global user.name "anandsoftinator"
+        git config --global user.email "anand@softinator.com"
 
     - name: Fetch upstream
       run: |
