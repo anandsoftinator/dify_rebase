@@ -13,18 +13,21 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch all history to ensure all branches are available
 
     - name: Set Git user
       run: |
         git config --global user.name "Your Name"
         git config --global user.email "you@example.com"
 
-    - name: Fetch upstream and rebase main
+    - name: Fetch all branches
+      run: git fetch --all
+
+    - name: Checkout main and rebase
       run: |
-        git remote add upstream https://github.com/langgenius/dify.git
-        git fetch upstream
         git checkout main
-        git pull --rebase upstream main  # Use rebase to reconcile branches
+        git pull --rebase upstream main  # Rebase main with upstream
 
     - name: Checkout changes branch
       run: git checkout changes
