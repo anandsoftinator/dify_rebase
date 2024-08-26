@@ -26,7 +26,7 @@ jobs:
     - name: Push rebased branch
       if: success()
       run: |
-        git push origin customizations --force
+        git push origin changes --force
 
   deploy:
     needs: rebase
