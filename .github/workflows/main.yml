@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'  # Run daily to check for upstream updates, adjust as necessary
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Fetch upstream
+      run: |
+        git remote add upstream https://github.com/langgenius/dify.git
+        git fetch upstream
+        git checkout main
+        git pull upstream main
+        git checkout changes
+        git rebase main
+
+    - name: Push rebased branch
+      if: success()
+      run: |
+        git push origin customizations --force
+
+  deploy:
+    needs: rebase
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: docker build -t myapp:${{ github.sha }} .
+
+    - name: Push Docker image to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_USERNAME }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        docker tag myapp:${{ github.sha }} myusername/myapp:latest
+        docker push myusername/myapp:latest
+
+    - name: Deploy to server
+      run: |
+        ssh user@your-server "docker pull myusername/myapp:latest && docker-compose up -d"
