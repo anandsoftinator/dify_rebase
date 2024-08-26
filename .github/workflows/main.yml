@@ -16,19 +16,23 @@ jobs:
 
     - name: Set Git user
       run: |
-        git config --global user.name "anandsoftinator"
-        git config --global user.email "anand@softinator.com"
+        git config --global user.name "Your Name"
+        git config --global user.email "you@example.com"
 
-    - name: Fetch upstream
+    - name: Fetch upstream and rebase main
       run: |
         git remote add upstream https://github.com/langgenius/dify.git
         git fetch upstream
         git checkout main
         git pull --rebase upstream main  # Use rebase to reconcile branches
-        git checkout changes
-        git rebase main
 
-    - name: Push rebased branch
+    - name: Checkout changes branch
+      run: git checkout changes
+
+    - name: Rebase changes onto main
+      run: git rebase main
+
+    - name: Push rebased changes branch
       if: success()
       run: |
         git push origin changes --force
